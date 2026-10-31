@@ -12,6 +12,7 @@ import {
   Building2,
   Database,
   RefreshCw,
+  Download,
 } from 'lucide-react';
 
 export const AdminDashboard = () => {
@@ -25,6 +26,7 @@ export const AdminDashboard = () => {
   const [submittingAdd, setSubmittingAdd] = useState(false);
   const [modalFeedback, setModalFeedback] = useState(null);
   const [seeding, setSeeding] = useState(false);
+  const [downloadingCsv, setDownloadingCsv] = useState(false);
   const [seedNotice, setSeedNotice] = useState(null);
   const [ngoForm, setNgoForm] = useState({
     organizationName: '',
@@ -134,6 +136,30 @@ export const AdminDashboard = () => {
     }
   };
 
+  const handleDownloadCsv = async (type = 'all') => {
+    setDownloadingCsv(true);
+    try {
+      const response = await api.get(`/admin/export-csv?type=${type}`, {
+        responseType: 'blob',
+      });
+
+      const blob = new Blob([response.data], { type: 'text/csv;charset=utf-8;' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `FoodBridge_Report_${type}_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Failed to download CSV:', err);
+      alert('Failed to download CSV report. Please try again.');
+    } finally {
+      setDownloadingCsv(false);
+    }
+  };
+
   return (
     <DashboardLayout
       title="Platform Governance & Security"
@@ -148,6 +174,15 @@ export const AdminDashboard = () => {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            onClick={() => handleDownloadCsv('all')}
+            disabled={downloadingCsv}
+            className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-slate-800 border border-gray-200 px-3.5 py-2.5 rounded-xl font-bold text-xs shadow-xs hover:shadow transition-all disabled:opacity-50"
+            title="Download complete platform dataset as a CSV report"
+          >
+            <Download className={`w-3.5 h-3.5 text-slate-700 ${downloadingCsv ? 'animate-bounce' : ''}`} />
+            <span>{downloadingCsv ? 'Exporting CSV...' : 'Download CSV Report'}</span>
+          </button>
           <button
             onClick={handleSeedDatabase}
             disabled={seeding}

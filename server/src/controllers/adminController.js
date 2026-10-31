@@ -201,3 +201,117 @@ export const triggerDatabaseSeed = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+const escapeCsvField = (field) => {
+  if (field === null || field === undefined) return '""';
+  const str = String(field).replace(/"/g, '""');
+  return `"${str}"`;
+};
+
+export const exportReportCsv = async (req, res) => {
+  try {
+    const type = req.query.type || 'all'; // 'donations', 'rescues', 'ngos', 'users', or 'all'
+    const rows = [];
+
+    // Header row
+    rows.push([
+      'Record_Type',
+      'ID',
+      'Title_or_Name',
+      'Category_or_Role',
+      'Status',
+      'Portions_or_Capacity',
+      'City_or_Location',
+      'Related_Party',
+      'Created_At',
+      'Notes_or_Details',
+    ].map(escapeCsvField).join(','));
+
+    if (type === 'all' || type === 'donations') {
+      const donations = await Donation.find().populate('donorId', 'name email').sort({ createdAt: -1 });
+      for (const d of donations) {
+        rows.push([
+          'DONATION',
+          d._id,
+          d.title,
+          d.foodCategory,
+          d.status,
+          d.portionsAvailable,
+          d.pickupAddress?.city || d.pickupAddress?.formatted || 'N/A',
+          d.donorId?.name || d.donorContact?.name || 'N/A',
+          d.createdAt ? new Date(d.createdAt).toISOString() : 'N/A',
+          d.description || '',
+        ].map(escapeCsvField).join(','));
+      }
+    }
+
+    if (type === 'all' || type === 'rescues') {
+      const rescues = await Rescue.find()
+        .populate('donorId', 'name')
+        .populate('ngoId', 'name')
+        .populate('volunteerId', 'name')
+        .sort({ createdAt: -1 });
+
+      for (const r of rescues) {
+        rows.push([
+          'RESCUE',
+          r._id,
+          `Rescue #${r._id.toString().slice(-6)}`,
+          'RESCUE_MISSION',
+          r.status,
+          r.portionsAllocated,
+          `Distance: ${r.routeDistanceKm || 0} km`,
+          `NGO: ${r.ngoId?.name || 'N/A'} | Donor: ${r.donorId?.name || 'N/A'} | Vol: ${r.volunteerId?.name || 'N/A'}`,
+          r.createdAt ? new Date(r.createdAt).toISOString() : 'N/A',
+          r.deliveryProofNotes || r.handoverNotes || '',
+        ].map(escapeCsvField).join(','));
+      }
+    }
+
+    if (type === 'all' || type === 'ngos') {
+      const ngos = await NGOProfile.find().populate('userId', 'email phone');
+      for (const n of ngos) {
+        rows.push([
+          'NGO_PARTNER',
+          n._id,
+          n.organizationName,
+          'NGO',
+          n.verificationStatus,
+          `${n.collectionCapacity} (Demand: ${n.mealDemand})`,
+          n.address?.city || 'N/A',
+          n.userId?.email || n.contactDetails?.email || 'N/A',
+          n.createdAt ? new Date(n.createdAt).toISOString() : 'N/A',
+          `Reg: ${n.registrationNumber || 'N/A'} | Radius: ${n.serviceRadiusKm} km`,
+        ].map(escapeCsvField).join(','));
+      }
+    }
+
+    if (type === 'all' || type === 'users') {
+      const users = await User.find().select('-passwordHash').sort({ createdAt: -1 });
+      for (const u of users) {
+        rows.push([
+          'USER',
+          u._id,
+          u.name,
+          u.role,
+          u.isActive ? 'ACTIVE' : 'INACTIVE',
+          'N/A',
+          'N/A',
+          u.email,
+          u.createdAt ? new Date(u.createdAt).toISOString() : 'N/A',
+          `Phone: ${u.phone || 'N/A'}`,
+        ].map(escapeCsvField).join(','));
+      }
+    }
+
+    const csvContent = rows.join('\r\n');
+    const filename = `FoodBridge_Report_${type}_${new Date().toISOString().slice(0, 10)}.csv`;
+
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    return res.status(200).send(csvContent);
+  } catch (error) {
+    console.error('CSV Export Error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to generate CSV report: ' + error.message });
+  }
+};

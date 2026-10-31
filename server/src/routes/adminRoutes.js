@@ -7,6 +7,7 @@ import {
   getAuditLogs,
   createNgo,
   triggerDatabaseSeed,
+  exportReportCsv,
 } from '../controllers/adminController.js';
 import { protect, authorize } from '../middleware/authMiddleware.js';
 
@@ -21,5 +22,6 @@ router.post('/ngos', createNgo);
 router.get('/users', getAllUsers);
 router.get('/audit-logs', getAuditLogs);
 router.post('/seed', triggerDatabaseSeed);
+router.get('/export-csv', exportReportCsv);
 
 export default router;
