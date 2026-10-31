@@ -10,6 +10,8 @@ import {
   PlusCircle,
   X,
   Building2,
+  Database,
+  RefreshCw,
 } from 'lucide-react';
 
 export const AdminDashboard = () => {
@@ -22,6 +24,8 @@ export const AdminDashboard = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [submittingAdd, setSubmittingAdd] = useState(false);
   const [modalFeedback, setModalFeedback] = useState(null);
+  const [seeding, setSeeding] = useState(false);
+  const [seedNotice, setSeedNotice] = useState(null);
   const [ngoForm, setNgoForm] = useState({
     organizationName: '',
     contactName: '',
@@ -110,12 +114,32 @@ export const AdminDashboard = () => {
     }
   };
 
+  const handleSeedDatabase = async () => {
+    if (!window.confirm('Seed database with realistic demo donations, NGOs, volunteers, and historical rescue records?')) {
+      return;
+    }
+    setSeeding(true);
+    setSeedNotice(null);
+    try {
+      const res = await api.post('/admin/seed');
+      if (res.data.success) {
+        setSeedNotice({ type: 'success', text: res.data.message || 'Database seeded successfully!' });
+        fetchData();
+      }
+    } catch (err) {
+      setSeedNotice({ type: 'error', text: err.response?.data?.message || 'Failed to seed database.' });
+    } finally {
+      setSeeding(false);
+      setTimeout(() => setSeedNotice(null), 5000);
+    }
+  };
+
   return (
     <DashboardLayout
       title="Platform Governance & Security"
       subtitle="Oversee NGO accreditation, audit trails, and platform integrity"
     >
-      {/* Top Action Bar with Add NGO Button */}
+      {/* Top Action Bar with Add NGO and Seed Database Buttons */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h2 className="text-xl font-black text-slate-900 tracking-tight">System Operations</h2>
@@ -123,17 +147,45 @@ export const AdminDashboard = () => {
             Manage verifications, onboard verified partners, and audit live logs
           </p>
         </div>
-        <button
-          onClick={() => {
-            setModalFeedback(null);
-            setShowAddModal(true);
-          }}
-          className="inline-flex items-center gap-2 bg-[#0B3B24] hover:bg-[#114A2D] text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm hover:shadow transition-all self-start sm:self-auto"
-        >
-          <PlusCircle className="w-4 h-4 text-emerald-300" />
-          <span>Add New NGO Partner</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            onClick={handleSeedDatabase}
+            disabled={seeding}
+            className="inline-flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 px-3.5 py-2.5 rounded-xl font-bold text-xs shadow-xs hover:shadow transition-all disabled:opacity-50"
+            title="Seed database with realistic demo donations, NGOs and metrics"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 text-emerald-700 ${seeding ? 'animate-spin' : ''}`} />
+            <span>{seeding ? 'Seeding Database...' : 'Seed Demo Data'}</span>
+          </button>
+          <button
+            onClick={() => {
+              setModalFeedback(null);
+              setShowAddModal(true);
+            }}
+            className="inline-flex items-center gap-2 bg-[#0B3B24] hover:bg-[#114A2D] text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm hover:shadow transition-all"
+          >
+            <PlusCircle className="w-4 h-4 text-emerald-300" />
+            <span>Add New NGO Partner</span>
+          </button>
+        </div>
       </div>
+
+      {seedNotice && (
+        <div
+          className={`p-3.5 rounded-xl mb-6 text-xs font-semibold flex items-center gap-2.5 border transition-all ${
+            seedNotice.type === 'success'
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
+              : 'bg-red-50 border-red-200 text-red-800'
+          }`}
+        >
+          {seedNotice.type === 'success' ? (
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          ) : (
+            <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+          )}
+          <span>{seedNotice.text}</span>
+        </div>
+      )}
 
       {/* Metrics Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">

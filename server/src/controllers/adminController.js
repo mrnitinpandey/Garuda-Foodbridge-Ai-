@@ -178,3 +178,26 @@ export const createNgo = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const triggerDatabaseSeed = async (req, res) => {
+  try {
+    const { seedDatabase } = await import('../../seed/seed.js');
+    await seedDatabase();
+
+    await AuditLog.create({
+      actorId: req.user._id,
+      actorRole: 'ADMIN',
+      action: 'ADMIN_RESEED_DATABASE',
+      entityType: 'SYSTEM',
+      reason: 'Admin triggered database reseeding with fresh demo data.',
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Database successfully re-seeded with realistic demo records, donations, and NGOs!',
+    });
+  } catch (error) {
+    console.error('Trigger seed error:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};

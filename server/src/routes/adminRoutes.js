@@ -6,6 +6,7 @@ import {
   getAllUsers,
   getAuditLogs,
   createNgo,
+  triggerDatabaseSeed,
 } from '../controllers/adminController.js';
 import { protect, authorize } from '../middleware/authMiddleware.js';
 
@@ -19,5 +20,6 @@ router.patch('/ngos/:id/verify', verifyNgo);
 router.post('/ngos', createNgo);
 router.get('/users', getAllUsers);
 router.get('/audit-logs', getAuditLogs);
+router.post('/seed', triggerDatabaseSeed);
 
 export default router;
