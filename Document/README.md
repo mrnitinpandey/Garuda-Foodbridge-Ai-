@@ -15,6 +15,7 @@ Welcome to the **FoodBridgeAI** documentation. This directory provides complete 
 | **[5. API Reference & Endpoints](./05_API_DOCUMENTATION.md)** | Complete RESTful API endpoints for Auth, Donors, NGOs, Rescues, Analytics, and Admin. |
 | **[6. Admin Guide & Operations](./06_ADMIN_OPERATIONS.md)** | NGO accreditation, live database seeding, CSV export, and audit trail stream. |
 | **[7. Setup & Deployment Guide](./07_SETUP_AND_DEPLOYMENT.md)** | Local environment setup, running servers, testing, build commands, and demo credentials. |
+| **[8. Managing Database with IBM Db2](./08_MANAGING_WITH_IBM_DB2.md)** | Relational DDL schemas, seeding scripts, and how to manage the database via the IBM Db2 Developer Extension. |
 
 ---
 
@@ -23,3 +24,4 @@ Welcome to the **FoodBridgeAI** documentation. This directory provides complete 
 - **Domain**: Social Impact, Surplus Food Rescue, Cold-chain Logistics, NGO Allocation
 - **Architecture**: MERN (MongoDB / In-Memory MongoDB Server, Express.js, React 18, Node.js)
 - **Primary Goal**: Bridge the gap between surplus food generators (canteens, banquet halls, restaurants) and verified hunger relief organizations with speed, safety, and transparency.
+

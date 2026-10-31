@@ -47,3 +47,4 @@ Every day, large educational institutions and catering services prepare food in 
 ### 📑 Administrative Governance & CSV Data Export
 - 1-click database seeding for demonstrations.
 - Full CSV export of platform data (Donations, Rescues, NGOs, and Users) for offline audits and reporting.
+

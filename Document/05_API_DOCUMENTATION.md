@@ -80,3 +80,4 @@ All endpoints are prefixed with `/api`. Protected routes require a Bearer token 
 | `GET` | `/api/admin/audit-logs` | Retrieve recent immutable system audit trails. |
 | `POST` | `/api/admin/seed` | Trigger live database seeding with demo donations and NGOs. |
 | `GET` | `/api/admin/export-csv` | Download complete platform report in RFC-compliant CSV format (`?type=all`). |
+

@@ -67,3 +67,4 @@ Every status change (NGO approval, direct partner creation, database reseed) cre
 - **Entity Type & Entity ID**
 - **Previous & New State**
 - **Timestamp** (UTC)
+

@@ -66,3 +66,4 @@ The engine does not provide a black-box number. For every recommended candidate,
 - An overall priority badge (`High`, `Optimal`, `Moderate`).
 - An exact radar/bar breakdown of the 4 factor scores.
 - A natural-language sentence explaining **why** this match is recommended (e.g., *"Matched 100 portions with Annapurna Food Bank due to immediate 120 portion demand, 4.2 km road proximity, and valid cold storage."*).
+

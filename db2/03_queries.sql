@@ -1,0 +1,65 @@
+-- ============================================================================
+-- FoodBridgeAI — Useful Queries for IBM Db2 Developer Extension
+-- Run these queries directly inside VS Code / IDE using the Db2 extension
+-- ============================================================================
+
+-- 1. View all active surplus donations ready for pickup
+SELECT 
+    DONATION_ID,
+    TITLE,
+    FOOD_CATEGORY,
+    PORTIONS_AVAILABLE,
+    FOOD_TEMP_CELSIUS,
+    COLLECTION_DEADLINE,
+    STATUS
+FROM DONATIONS
+WHERE STATUS = 'AVAILABLE'
+ORDER BY COLLECTION_DEADLINE ASC;
+
+-- 2. Verify NGO accreditation queue & capacity
+SELECT 
+    NP.ORG_NAME,
+    U.EMAIL,
+    NP.REGISTRATION_NO,
+    NP.COLLECTION_CAPACITY,
+    NP.MEAL_DEMAND,
+    NP.VERIFICATION_STATUS
+FROM NGO_PROFILES NP
+JOIN USERS U ON NP.USER_ID = U.USER_ID
+ORDER BY NP.VERIFICATION_STATUS, NP.COLLECTION_CAPACITY DESC;
+
+-- 3. Explainable AI Match ranking report
+SELECT 
+    M.MATCH_ID,
+    D.TITLE AS DONATION,
+    U.NAME AS NGO_NAME,
+    M.PORTIONS_ALLOCATED,
+    M.PRIORITY_SCORE,
+    M.URGENCY_SCORE,
+    M.QUANTITY_FIT_SCORE,
+    M.TRAVEL_SCORE,
+    M.DEMAND_FIT_SCORE,
+    M.EST_DISTANCE_KM,
+    M.STATUS
+FROM MATCHES M
+JOIN DONATIONS D ON M.DONATION_ID = D.DONATION_ID
+JOIN USERS U ON M.NGO_ID = U.USER_ID
+ORDER BY M.PRIORITY_SCORE DESC;
+
+-- 4. Social & Environmental Impact Summary
+SELECT 
+    COUNT(IMPACT_ID) AS TOTAL_RESCUES_COMPLETED,
+    SUM(MEALS_DELIVERED) AS TOTAL_MEALS_DELIVERED,
+    SUM(FOOD_WASTE_SAVED_KG) AS TOTAL_KG_SAVED,
+    SUM(CO2_AVOIDED_KG) AS TOTAL_CO2_AVOIDED_KG
+FROM IMPACT_RECORDS;
+
+-- 5. Audit Log Inspection
+SELECT 
+    LOG_ID,
+    ACTION,
+    ENTITY_TYPE,
+    REASON,
+    TIMESTAMP
+FROM AUDIT_LOGS
+ORDER BY TIMESTAMP DESC;

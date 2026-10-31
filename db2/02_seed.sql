@@ -1,0 +1,52 @@
+-- ============================================================================
+-- FoodBridgeAI — Initial Seed Data for IBM Db2
+-- Compatible with: IBM Db2 Developer Extension
+-- ============================================================================
+
+-- 1. Insert Core Users
+INSERT INTO USERS (USER_ID, NAME, EMAIL, PASSWORD_HASH, ROLE, PHONE, IS_ACTIVE, IS_DEMO_ACCOUNT)
+VALUES 
+('USR-001', 'NIT Canteen Services', 'canteen@college.edu', '$2a$10$wT0XkHjG0qBv2y3O0KzXwO0...', 'DONOR', '+91 98765 43210', 1, 1),
+('USR-002', 'Annapurna Food Bank', 'annapurna@ngo.org', '$2a$10$wT0XkHjG0qBv2y3O0KzXwO0...', 'NGO', '+91 98765 11111', 1, 1),
+('USR-003', 'Hope Children Home', 'hope@ngo.org', '$2a$10$wT0XkHjG0qBv2y3O0KzXwO0...', 'NGO', '+91 98765 22222', 1, 1),
+('USR-004', 'Seva Care Center', 'seva@ngo.org', '$2a$10$wT0XkHjG0qBv2y3O0KzXwO0...', 'NGO', '+91 98765 33333', 1, 1),
+('USR-005', 'Arjun Das (Volunteer)', 'volunteer@foodbridge.org', '$2a$10$wT0XkHjG0qBv2y3O0KzXwO0...', 'VOLUNTEER', '+91 98765 77777', 1, 1),
+('USR-006', 'Dr. Anita Roy (Chief Admin)', 'admin@foodbridge.org', '$2a$10$wT0XkHjG0qBv2y3O0KzXwO0...', 'ADMIN', '+91 98765 00000', 1, 1);
+
+-- 2. Insert Donor Profile
+INSERT INTO DONOR_PROFILES (PROFILE_ID, USER_ID, ORG_NAME, ORG_TYPE, STREET_ADDRESS, CITY, STATE, ZIP_CODE, LONGITUDE, LATITUDE, CONTACT_NAME, CONTACT_PHONE)
+VALUES 
+('DP-001', 'USR-001', 'NIT Central Dining & Food Court', 'COLLEGE_CANTEEN', 'Dining Block A, Campus Road', 'Bengaluru', 'Karnataka', '560001', 77.59460000, 12.97160000, 'Chef Ramesh Kumar', '+91 98765 43210');
+
+-- 3. Insert NGO Profiles
+INSERT INTO NGO_PROFILES (NGO_ID, USER_ID, ORG_NAME, REGISTRATION_NO, VERIFICATION_STATUS, SERVICE_RADIUS_KM, MEAL_DEMAND, COLLECTION_CAPACITY, ACCEPTED_CATEGORIES, STREET_ADDRESS, CITY, LONGITUDE, LATITUDE, HAS_COLD_STORAGE, HAS_INSULATED_BOXES, FOOD_SAFETY_CERT, HAS_VEHICLE, VEHICLE_TYPE, MAX_LOAD_KG)
+VALUES 
+('NP-001', 'USR-002', 'Annapurna Community Food Bank', 'NGO-KAR-2018-8821', 'VERIFIED', 18.00, 120, 200, 'COOKED_MEALS,PACKAGED_FOOD,BAKERY_ITEMS', '14th Cross, Shanti Nagar Community Hall', 'Bengaluru', 77.61010000, 12.95500000, 1, 1, 1, 1, 'AUTO_VAN', 200.00),
+('NP-002', 'USR-003', 'Hope Shelter & Child Welfare', 'NGO-KAR-2021-3912', 'VERIFIED', 12.00, 50, 60, 'COOKED_MEALS,BAKERY_ITEMS,FRUITS_VEGETABLES', '8th Main, Malleshwaram West', 'Bengaluru', 77.56000000, 12.99000000, 1, 1, 1, 1, 'CAR', 80.00),
+('NP-003', 'USR-004', 'Seva Care Foundation', 'NGO-APP-2025-0019', 'PENDING', 10.00, 80, 80, 'COOKED_MEALS', '5th Block, Koramangala', 'Bengaluru', 77.62500000, 12.93500000, 0, 1, 0, 1, 'AUTO_VAN', 100.00);
+
+-- 4. Insert Primary Active Donation (100 Portions)
+INSERT INTO DONATIONS (DONATION_ID, DONOR_ID, TITLE, FOOD_CATEGORY, DESCRIPTION, PORTIONS_AVAILABLE, PORTIONS_REMAINING, PREPARED_AT, COLLECTION_DEADLINE, STORAGE_CONDITIONS, FOOD_TEMP_CELSIUS, STATUS, PICKUP_ADDRESS, CITY, LONGITUDE, LATITUDE, SAFETY_STATUS)
+VALUES 
+('DON-001', 'USR-001', 'Surplus Lunch: Fresh Veg Biryani & Dal Makhani', 'COOKED_MEALS', 'Freshly prepared college lunch batch. Packed in insulated containers.', 100, 100, CURRENT TIMESTAMP - 90 MINUTES, CURRENT TIMESTAMP + 4 HOURS, 'ROOM_TEMPERATURE', 58.00, 'AVAILABLE', 'NIT Canteen Logistics Gate 2', 'Bengaluru', 77.59460000, 12.97160000, 'ELIGIBLE'),
+('DON-002', 'USR-001', 'Dinner Buffet Roti & Paneer Curry', 'COOKED_MEALS', 'Surplus hot meals from hostel dinner', 75, 0, CURRENT TIMESTAMP - 26 HOURS, CURRENT TIMESTAMP - 20 HOURS, 'ROOM_TEMPERATURE', 55.00, 'DELIVERED', 'NIT Canteen Gate 1', 'Bengaluru', 77.59460000, 12.97160000, 'ELIGIBLE');
+
+-- 5. Insert Matches
+INSERT INTO MATCHES (MATCH_ID, DONATION_ID, NGO_ID, PORTIONS_ALLOCATED, PRIORITY_SCORE, URGENCY_SCORE, QUANTITY_FIT_SCORE, TRAVEL_SCORE, DEMAND_FIT_SCORE, EST_TRAVEL_MINUTES, EST_DISTANCE_KM, RECOMMENDATION_NOTE, STATUS)
+VALUES 
+('MTH-001', 'DON-002', 'USR-002', 75, 92.50, 90.00, 95.00, 88.00, 100.00, 14, 4.20, 'Immediate demand match for 75 portions with high delivery feasibility.', 'COMPLETED');
+
+-- 6. Insert Completed Rescue
+INSERT INTO RESCUES (RESCUE_ID, DONATION_ID, MATCH_ID, DONOR_ID, NGO_ID, VOLUNTEER_ID, PORTIONS_ALLOCATED, PORTIONS_DELIVERED, ROUTE_DISTANCE_KM, STATUS, PICKUP_TIME, DELIVERY_TIME, DELIVERY_PROOF_NOTE)
+VALUES 
+('RSC-001', 'DON-002', 'MTH-001', 'USR-001', 'USR-002', 'USR-005', 75, 75, 4.20, 'DELIVERED', CURRENT TIMESTAMP - 24 HOURS, CURRENT TIMESTAMP - 23 HOURS, 'Distributed to 75 residents at Shanti Nagar Community Shelter.');
+
+-- 7. Insert Historical Impact Record
+INSERT INTO IMPACT_RECORDS (IMPACT_ID, RESCUE_ID, DONATION_ID, DONOR_ID, NGO_ID, MEALS_DELIVERED, FOOD_WASTE_SAVED_KG, CO2_AVOIDED_KG, RECORDED_AT)
+VALUES 
+('IMP-001', 'RSC-001', 'DON-002', 'USR-001', 'USR-002', 75, 33.75, 84.38, CURRENT TIMESTAMP - 23 HOURS);
+
+-- 8. Insert System Audit Log
+INSERT INTO AUDIT_LOGS (LOG_ID, ACTOR_ID, ACTOR_ROLE, ACTION, ENTITY_TYPE, ENTITY_ID, REASON)
+VALUES 
+('LOG-001', 'USR-006', 'ADMIN', 'SEED_INITIAL_DATABASE', 'SYSTEM', 'SYSTEM', 'Initialized database records for demo launch');

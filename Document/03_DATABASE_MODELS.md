@@ -121,3 +121,4 @@ Immutable ledger for platform governance.
 - `entityType` (String), `entityId` (ObjectId).
 - `reason` (String).
 - `timestamp` (Date, default `Date.now`).
+

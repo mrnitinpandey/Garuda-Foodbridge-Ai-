@@ -124,3 +124,4 @@ The platform includes pre-configured demo users across all roles (password for a
 | **Pending NGO** (Seva Center) | `seva@ngo.org` | Showcase safety exclusion in AI matching engine. |
 | **Volunteer Driver** | `volunteer@foodbridge.org` | Route navigation, confirm pickup & delivery. |
 | **Platform Administrator** | `admin@foodbridge.org` | Manage accreditation, seed demo data, export CSV report (`/admin`). |
+
